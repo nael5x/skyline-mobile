@@ -32,6 +32,8 @@
 ## ⚙️ Setup & Installation
 1. Install dependencies:
    ```bash
-   npm install
+   npm install```
 
-   Developed by: nael5x
+   
+
+Developed by: nael5x
