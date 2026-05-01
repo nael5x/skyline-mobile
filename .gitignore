@@ -39,3 +39,14 @@ yarn-error.*
 .vercel
 
 .env
+
+# Firebase configuration files (Very Important)
+google-services.json
+GoogleService-Info.plist
+
+# Expo Application Services secrets
+eas.json
+
+# Replit artifacts
+.replit-artifact/
+.replit
