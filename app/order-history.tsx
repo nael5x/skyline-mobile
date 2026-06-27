@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity, Platform,
-  Alert,
 } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useCart } from "../context/CartContext";
+import { showConfirm } from "../utils/alert";
 
 export interface StoredOrder {
   id: string;
@@ -47,22 +47,24 @@ export default function OrderHistoryScreen() {
   };
 
   const clearHistory = () => {
-    Alert.alert(
-      t("clearCart"),
-      language === "ar"
-        ? "هل تريد حذف جميع سجلات الطلبات؟"
-        : language === "tr"
-        ? "Tüm sipariş geçmişini silmek istiyor musunuz?"
-        : "Do you want to delete all order history?",
-      [
-        { text: t("cancel"), style: "cancel" },
-        {
-          text: t("yes"), style: "destructive", onPress: async () => {
-            await AsyncStorage.removeItem("order_history");
-            setOrders([]);
-          },
-        },
-      ]
+    const message = language === "ar"
+      ? "هل تريد حذف جميع سجلات الطلبات؟"
+      : language === "tr"
+      ? "Tüm sipariş geçmişini silmek istiyor musunuz?"
+      : "Do you want to delete all order history?";
+
+    showConfirm(
+      message,
+      async () => {
+        await AsyncStorage.removeItem("order_history");
+        setOrders([]);
+      },
+      {
+        title: t("clearCart"),
+        confirmText: t("yes"),
+        cancelText: t("cancel"),
+        destructive: true,
+      }
     );
   };
 

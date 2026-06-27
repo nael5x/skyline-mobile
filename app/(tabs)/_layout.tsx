@@ -3,6 +3,7 @@ import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, Text, View, useColorScheme } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import colors from "@/constants/colors";
 import { useCart } from "@/context/CartContext";
@@ -46,6 +47,8 @@ export default function TabLayout() {
   const isDark = colorScheme === "dark";
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
+  const insets = useSafeAreaInsets();
+  const bottomInset = isWeb ? 0 : insets.bottom;
 
   return (
     <Tabs
@@ -59,7 +62,11 @@ export default function TabLayout() {
           borderTopWidth: 1,
           borderTopColor: c.border,
           elevation: 0,
-          height: isWeb ? 84 : 60,
+          height: (isWeb ? 84 : 60) + bottomInset,
+          paddingBottom: bottomInset,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
         },
         tabBarBackground: () =>
           isIOS ? (

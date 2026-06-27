@@ -3,7 +3,6 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  Alert,
   Platform,
   ScrollView,
   StyleSheet,
@@ -18,6 +17,7 @@ import colors from "@/constants/colors";
 import { CATEGORIES, getCategoryName, getProductName } from "@/constants/data";
 import { CartItem, useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { showAlert, showConfirm } from "@/utils/alert";
 
 const VAT_RATE = 0.2;
 const VALID_COUPONS: Record<string, number> = {
@@ -33,7 +33,6 @@ function CartItemCard({ item }: { item: CartItem }) {
 
   return (
     <View style={s.itemCard}>
-      {/* Top row: name + delete */}
       <View style={[s.itemTop, isRTL && s.rowR]}>
         <Text style={[s.itemName, isRTL && s.rtl]} numberOfLines={2}>
           {getProductName(item.product, language)}
@@ -47,7 +46,6 @@ function CartItemCard({ item }: { item: CartItem }) {
         </TouchableOpacity>
       </View>
 
-      {/* Category badge */}
       {category && (
         <View style={[s.catBadge, { backgroundColor: (category.color ?? colors.light.primary) + "18" }]}>
           <Feather name={category.icon as any} size={10} color={category.color ?? colors.light.primary} />
@@ -57,7 +55,6 @@ function CartItemCard({ item }: { item: CartItem }) {
         </View>
       )}
 
-      {/* Bottom row: qty + subtotal */}
       <View style={[s.itemBottom, isRTL && s.rowR]}>
         <View style={s.qtyRow}>
           <TouchableOpacity
@@ -75,7 +72,6 @@ function CartItemCard({ item }: { item: CartItem }) {
           </TouchableOpacity>
         </View>
 
-        {/* Details note */}
         <View style={s.detailsBox}>
           <Feather name="file-text" size={11} color="#AAA" />
           <Text style={s.detailsText}>
@@ -128,18 +124,22 @@ export default function CartScreen() {
       setAppliedCoupon(code);
       setDiscountPct(VALID_COUPONS[code]);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert("✅", `${language === "ar" ? "تم تطبيق خصم" : language === "tr" ? "İndirim uygulandı:" : "Discount applied:"} ${VALID_COUPONS[code]}%`);
+      showAlert(`${language === "ar" ? "تم تطبيق خصم" : language === "tr" ? "İndirim uygulandı:" : "Discount applied:"} ${VALID_COUPONS[code]}%`, "✅");
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("", language === "ar" ? "كوبون غير صحيح" : language === "tr" ? "Geçersiz kupon kodu" : "Invalid coupon code");
+      showAlert(language === "ar" ? "كوبون غير صحيح" : language === "tr" ? "Geçersiz kupon kodu" : "Invalid coupon code");
     }
   };
 
   const handleClearCart = () => {
-    Alert.alert("", t("clearCartConfirm"), [
-      { text: t("cancel"), style: "cancel" },
-      { text: t("yes"), style: "destructive", onPress: () => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); clearCart(); } },
-    ]);
+    showConfirm(
+      t("clearCartConfirm"),
+      () => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        clearCart();
+      },
+      { confirmText: t("yes"), cancelText: t("cancel"), destructive: true }
+    );
   };
 
   if (items.length === 0) {
@@ -160,7 +160,6 @@ export default function CartScreen() {
 
   return (
     <View style={[s.container, { paddingTop: topPad }]}>
-      {/* Header */}
       <View style={[s.header, isRTL && s.rowR]}>
         <View style={[s.headerLeft, isRTL && s.rowR]}>
           <Feather name="shopping-cart" size={18} color={colors.light.primary} />
@@ -179,10 +178,8 @@ export default function CartScreen() {
         contentContainerStyle={[s.scroll, { paddingBottom: Math.max(insets.bottom, 24) + 190 }]}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Items */}
         {items.map((item) => <CartItemCard key={item.product.id} item={item} />)}
 
-        {/* Coupon */}
         <View style={s.couponCard}>
           <View style={[s.couponHeader, isRTL && s.rowR]}>
             <Feather name="tag" size={14} color="#E63946" />
@@ -208,7 +205,6 @@ export default function CartScreen() {
           </View>
         </View>
 
-        {/* Order Summary */}
         <View style={s.summaryCard}>
           <View style={[s.summaryHeader, isRTL && s.rowR]}>
             <Feather name="bar-chart-2" size={14} color="#FFF" />
@@ -232,11 +228,9 @@ export default function CartScreen() {
           </View>
         </View>
 
-        {/* Price note */}
         <Text style={[s.priceNote, { textAlign: isRTL ? "right" : "left" }]}>{L.priceNote}</Text>
       </ScrollView>
 
-      {/* Sticky bottom checkout */}
       <View style={[s.bottomBar, { paddingBottom: Math.max(insets.bottom, 20) + 64 }]}>
         <TouchableOpacity
           style={s.checkoutBtn}

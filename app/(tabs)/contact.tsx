@@ -2,7 +2,6 @@ import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
 import {
-  Alert,
   Linking,
   Platform,
   ScrollView,
@@ -17,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import colors from "@/constants/colors";
 import { CONTACT_INFO } from "@/constants/data";
 import { useLanguage } from "@/context/LanguageContext";
+import { showAlert } from "@/utils/alert";
 
 export default function ContactScreen() {
   const { t, isRTL } = useLanguage();
@@ -50,7 +50,7 @@ export default function ContactScreen() {
 
   const handleSend = () => {
     if (!name.trim() || !email.trim() || !message.trim()) {
-      Alert.alert("", t("fillAllFields"));
+      showAlert(t("fillAllFields"));
       return;
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -60,7 +60,7 @@ export default function ContactScreen() {
       setName("");
       setEmail("");
       setMessage("");
-      Alert.alert("", t("messageSent"));
+      showAlert(t("messageSent"));
     }, 1200);
   };
 

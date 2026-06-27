@@ -1,7 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-import { Language, TranslationKey, translations } from "@/constants/translations";
+import {
+  Language,
+  TranslationKey,
+  translations,
+} from "@/constants/translations";
 
 interface LanguageContextType {
   language: Language;
@@ -22,8 +32,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     AsyncStorage.getItem("language").then((saved) => {
-      if (saved && (saved === "ar" || saved === "en" || saved === "tr")) {
-        setLanguageState(saved as Language);
+      if (saved === "ar" || saved === "tr") {
+        setLanguageState(saved);
+      } else {
+        // إذا كان مخزن سابقًا en أو أي قيمة قديمة، نرجعه للعربية
+        setLanguageState("ar");
+        AsyncStorage.setItem("language", "ar");
       }
     });
   }, []);
@@ -35,9 +49,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const t = useCallback(
     (key: TranslationKey): string => {
-      return translations[language][key] ?? key;
+      return translations[language]?.[key] ?? key;
     },
-    [language],
+    [language]
   );
 
   const isRTL = language === "ar";

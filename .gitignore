@@ -47,6 +47,3 @@ GoogleService-Info.plist
 # Expo Application Services secrets
 eas.json
 
-# Replit artifacts
-.replit-artifact/
-.replit

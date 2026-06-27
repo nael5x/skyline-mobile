@@ -1,39 +1,58 @@
 import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import colors from "@/constants/colors";
-import { CATEGORIES, Product, getProductDesc, getProductName } from "@/constants/data";
 import { useLanguage } from "@/context/LanguageContext";
+import { Product } from "@/types";
 
 interface ProductCardProps {
   product: Product;
   onPress: () => void;
 }
 
+function getText(
+  value: { ar: string; tr: string; en: string } | undefined,
+  language: "ar" | "tr" | "en"
+): string {
+  if (!value) return "";
+  return value[language] || value.ar || value.tr || value.en || "";
+}
+
 export function ProductCard({ product, onPress }: ProductCardProps) {
   const { language } = useLanguage();
-  const name = getProductName(product, language);
-  const desc = getProductDesc(product, language);
-  const category = CATEGORIES.find((c) => c.id === product.categoryId);
+
+  const name = getText(product.name, language);
+  const desc = getText(product.shortDescription || product.description, language);
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-      <View style={[styles.iconSection, { backgroundColor: (category?.color ?? colors.light.primary) + "15" }]}>
-        <Feather
-          name={(category?.icon as any) ?? "package"}
-          size={36}
-          color={category?.color ?? colors.light.primary}
-        />
+      <View style={styles.iconSection}>
+        {product.thumbnailUrl ? (
+          <Image
+            source={{ uri: product.thumbnailUrl }}
+            style={styles.thumbnail}
+            resizeMode="cover"
+          />
+        ) : (
+          <Feather name="package" size={30} color={colors.light.primary} />
+        )}
       </View>
+
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={2}>
           {name}
         </Text>
+
         <Text style={styles.desc} numberOfLines={2}>
           {desc}
         </Text>
+
+        <Text style={styles.price}>
+          {Number(product.basePrice || 0).toLocaleString()} {product.currency || "TRY"}
+        </Text>
       </View>
+
       <Feather name="chevron-right" size={18} color={colors.light.mutedForeground} />
     </TouchableOpacity>
   );
@@ -60,6 +79,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
+    backgroundColor: colors.light.primary + "15",
+    overflow: "hidden",
+  },
+  thumbnail: {
+    width: "100%",
+    height: "100%",
   },
   info: {
     flex: 1,
@@ -76,5 +101,11 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     color: colors.light.mutedForeground,
     lineHeight: 16,
+  },
+  price: {
+    marginTop: 6,
+    fontSize: 13,
+    fontFamily: "Inter_700Bold",
+    color: colors.light.primary,
   },
 });

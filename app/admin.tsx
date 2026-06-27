@@ -3,7 +3,6 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Platform,
   ScrollView,
@@ -20,6 +19,7 @@ import { getAllOrders, updateOrderStatus } from "@/services/orderService";
 import { getDashboardStats } from "@/services/dashboardService";
 import { seedIfEmpty } from "@/services/seedService";
 import { Order, OrderStatus, DashboardStats } from "@/types";
+import { showAlert } from "@/utils/alert";
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
   pending: "#F59E0B",
@@ -73,7 +73,7 @@ export default function AdminScreen() {
       await updateOrderStatus(orderId, newStatus);
       await loadData();
     } catch {
-      Alert.alert("Error", "Failed to update order status");
+      showAlert("Failed to update order status", "Error");
     }
   };
 
@@ -82,12 +82,12 @@ export default function AdminScreen() {
     try {
       const result = await seedIfEmpty();
       if (result.seeded) {
-        Alert.alert("Done", `Seeded ${result.categories} categories and ${result.products} products`);
+        showAlert(`Seeded ${result.categories} categories and ${result.products} products`, "Done");
       } else {
-        Alert.alert("Info", "Data already exists, skipping seed");
+        showAlert("Data already exists, skipping seed", "Info");
       }
     } catch (e: any) {
-      Alert.alert("Error", e.message);
+      showAlert(e.message, "Error");
     } finally {
       setSeeding(false);
     }
@@ -143,14 +143,14 @@ export default function AdminScreen() {
       </View>
 
       <View style={styles.tabRow}>
-        {(["dashboard", "orders", "tools"] as const).map((t) => (
+        {(["dashboard", "orders", "tools"] as const).map((tb) => (
           <TouchableOpacity
-            key={t}
-            style={[styles.tabBtn, tab === t && styles.tabBtnActive]}
-            onPress={() => setTab(t)}
+            key={tb}
+            style={[styles.tabBtn, tab === tb && styles.tabBtnActive]}
+            onPress={() => setTab(tb)}
           >
-            <Text style={[styles.tabBtnText, tab === t && styles.tabBtnTextActive]}>
-              {t === "dashboard" ? "Dashboard" : t === "orders" ? "Orders" : "Tools"}
+            <Text style={[styles.tabBtnText, tab === tb && styles.tabBtnTextActive]}>
+              {tb === "dashboard" ? "Dashboard" : tb === "orders" ? "Orders" : "Tools"}
             </Text>
           </TouchableOpacity>
         ))}
@@ -314,11 +314,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 16,
   },
-  title: {
-    fontSize: 20,
-    fontFamily: "Inter_700Bold",
-    color: colors.light.text,
-  },
+  title: { fontSize: 20, fontFamily: "Inter_700Bold", color: colors.light.text },
   tabRow: {
     flexDirection: "row",
     marginHorizontal: 20,
@@ -329,19 +325,10 @@ const styles = StyleSheet.create({
   },
   tabBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: "center" },
   tabBtnActive: { backgroundColor: colors.light.card },
-  tabBtnText: {
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.mutedForeground,
-  },
+  tabBtnText: { fontSize: 13, fontFamily: "Inter_500Medium", color: colors.light.mutedForeground },
   tabBtnTextActive: { color: colors.light.primary, fontFamily: "Inter_600SemiBold" },
   dashContent: { padding: 20, paddingBottom: 40 },
-  statsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginBottom: 20,
-  },
+  statsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 20 },
   statCard: {
     backgroundColor: colors.light.card,
     borderRadius: 14,
@@ -350,25 +337,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.light.border,
   },
-  statIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 22,
-    fontFamily: "Inter_700Bold",
-    color: colors.light.text,
-  },
-  statLabel: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    color: colors.light.mutedForeground,
-    marginTop: 2,
-  },
+  statIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", marginBottom: 8 },
+  statValue: { fontSize: 22, fontFamily: "Inter_700Bold", color: colors.light.text },
+  statLabel: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.light.mutedForeground, marginTop: 2 },
   todayCard: {
     backgroundColor: colors.light.card,
     borderRadius: 14,
@@ -377,30 +348,12 @@ const styles = StyleSheet.create({
     borderColor: colors.light.border,
     marginBottom: 20,
   },
-  todayTitle: {
-    fontSize: 16,
-    fontFamily: "Inter_600SemiBold",
-    color: colors.light.text,
-    marginBottom: 12,
-  },
+  todayTitle: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: colors.light.text, marginBottom: 12 },
   todayRow: { flexDirection: "row", alignItems: "center" },
   todayItem: { flex: 1, alignItems: "center" },
-  todayValue: {
-    fontSize: 24,
-    fontFamily: "Inter_700Bold",
-    color: colors.light.primary,
-  },
-  todayLabel: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    color: colors.light.mutedForeground,
-    marginTop: 4,
-  },
-  todayDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: colors.light.border,
-  },
+  todayValue: { fontSize: 24, fontFamily: "Inter_700Bold", color: colors.light.primary },
+  todayLabel: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.light.mutedForeground, marginTop: 4 },
+  todayDivider: { width: 1, height: 40, backgroundColor: colors.light.border },
   topCard: {
     backgroundColor: colors.light.card,
     borderRadius: 14,
@@ -408,12 +361,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.light.border,
   },
-  topTitle: {
-    fontSize: 16,
-    fontFamily: "Inter_600SemiBold",
-    color: colors.light.text,
-    marginBottom: 12,
-  },
+  topTitle: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: colors.light.text, marginBottom: 12 },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -421,23 +369,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: colors.light.border,
   },
-  topRank: {
-    fontSize: 14,
-    fontFamily: "Inter_700Bold",
-    color: colors.light.primary,
-    width: 30,
-  },
-  topName: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.text,
-  },
-  topSold: {
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.mutedForeground,
-  },
+  topRank: { fontSize: 14, fontFamily: "Inter_700Bold", color: colors.light.primary, width: 30 },
+  topName: { flex: 1, fontSize: 14, fontFamily: "Inter_500Medium", color: colors.light.text },
+  topSold: { fontSize: 13, fontFamily: "Inter_500Medium", color: colors.light.mutedForeground },
   filterRow: { paddingHorizontal: 16, maxHeight: 44, marginBottom: 8 },
   filterBtn: {
     paddingHorizontal: 14,
@@ -446,11 +380,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.muted,
     marginRight: 8,
   },
-  filterBtnText: {
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.mutedForeground,
-  },
+  filterBtnText: { fontSize: 13, fontFamily: "Inter_500Medium", color: colors.light.mutedForeground },
   orderCard: {
     backgroundColor: colors.light.card,
     borderRadius: 14,
@@ -459,38 +389,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.light.border,
   },
-  orderHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  orderIdText: {
-    fontSize: 15,
-    fontFamily: "Inter_600SemiBold",
-    color: colors.light.text,
-  },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontFamily: "Inter_600SemiBold",
-  },
-  orderDate: {
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    color: colors.light.mutedForeground,
-    marginBottom: 4,
-  },
-  orderItems2: {
-    fontSize: 14,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.text,
-    marginBottom: 10,
-  },
+  orderHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
+  orderIdText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: colors.light.text },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  statusBadgeText: { fontSize: 12, fontFamily: "Inter_600SemiBold" },
+  orderDate: { fontSize: 12, fontFamily: "Inter_400Regular", color: colors.light.mutedForeground, marginBottom: 4 },
+  orderItems2: { fontSize: 14, fontFamily: "Inter_500Medium", color: colors.light.text, marginBottom: 10 },
   advanceBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -499,36 +403,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 6,
   },
-  advanceBtnText: {
-    fontSize: 13,
-    fontFamily: "Inter_600SemiBold",
-    color: "#FFF",
-  },
-  emptyText: {
-    fontSize: 14,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.mutedForeground,
-    textAlign: "center",
-    marginTop: 40,
-  },
-  noAccessText: {
-    fontSize: 16,
-    fontFamily: "Inter_500Medium",
-    color: colors.light.mutedForeground,
-    marginTop: 16,
-    marginBottom: 24,
-  },
-  backBtn2: {
-    backgroundColor: colors.light.primary,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-  },
-  backBtn2Text: {
-    fontSize: 15,
-    fontFamily: "Inter_600SemiBold",
-    color: "#FFF",
-  },
+  advanceBtnText: { fontSize: 13, fontFamily: "Inter_600SemiBold", color: "#FFF" },
+  emptyText: { fontSize: 14, fontFamily: "Inter_500Medium", color: colors.light.mutedForeground, textAlign: "center", marginTop: 40 },
+  noAccessText: { fontSize: 16, fontFamily: "Inter_500Medium", color: colors.light.mutedForeground, marginTop: 16, marginBottom: 24 },
+  backBtn2: { backgroundColor: colors.light.primary, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 32 },
+  backBtn2Text: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#FFF" },
   toolBtn: {
     backgroundColor: colors.light.primary,
     borderRadius: 12,
@@ -538,17 +417,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 10,
   },
-  toolBtnText: {
-    fontSize: 15,
-    fontFamily: "Inter_600SemiBold",
-    color: "#FFF",
-  },
-  toolHint: {
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    color: colors.light.mutedForeground,
-    textAlign: "center",
-    marginTop: 12,
-    lineHeight: 20,
-  },
+  toolBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#FFF" },
+  toolHint: { fontSize: 13, fontFamily: "Inter_400Regular", color: colors.light.mutedForeground, textAlign: "center", marginTop: 12, lineHeight: 20 },
 });

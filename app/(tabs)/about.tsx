@@ -30,8 +30,7 @@ export default function AboutScreen() {
     {
       icon: "globe",
       label: t("language"),
-      value: language === "ar" ? "العربية" : language === "tr" ? "Türkçe" : "English",
-      action: () => setShowLangSelector(true),
+value: language === "tr" ? "Türkçe" : "العربية",      action: () => setShowLangSelector(true),
       color: "#1B3A6B",
     },
     {
@@ -58,8 +57,7 @@ export default function AboutScreen() {
     },
     {
       icon: "globe",
-      label: language === "ar" ? "زوروا موقعنا" : language === "tr" ? "Web Sitemizi Ziyaret Edin" : "Visit Our Website",
-      action: () => Linking.openURL(CONTACT_INFO.website),
+      label: language === "tr" ? "Web Sitemizi Ziyaret Edin" : "زوروا موقعنا",      action: () => Linking.openURL(CONTACT_INFO.website),
       color: "#1B3A6B",
     },
   ];

@@ -1,8 +1,9 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   Platform,
   ScrollView,
@@ -13,58 +14,122 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { ProductCard } from "@/components/ProductCard";
 import colors from "@/constants/colors";
-import { CATEGORIES, Category, Product, getCategoryName } from "@/constants/data";
 import { useLanguage } from "@/context/LanguageContext";
+import { Category, Product } from "@/types";
+import { getAllCategories } from "@/services/categoryService";
+import { getAllProducts, getProductsByCategory } from "@/services/productService";
+
+function getText(
+  value: { ar: string; tr: string; en: string } | undefined,
+  language: "ar" | "tr" | "en"
+): string {
+  if (!value) return "";
+  return value[language] || value.ar || value.tr || value.en || "";
+}
 
 export default function ProductsScreen() {
-  const { t, language, isRTL } = useLanguage();
+  const { t, language } = useLanguage();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ categoryId?: string }>();
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    params.categoryId ?? null,
+    params.categoryId ?? null
   );
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const allProducts = useMemo(
-    () => CATEGORIES.flatMap((c) => c.products),
-    [],
-  );
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadCategories() {
+      try {
+        const apiCategories = await getAllCategories();
+        if (mounted) {
+          setCategories(apiCategories);
+        }
+      } catch (error) {
+        console.error("Categories load error:", error);
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadProducts() {
+      try {
+        setLoading(true);
+
+        const apiProducts = selectedCategory
+          ? await getProductsByCategory(selectedCategory)
+          : await getAllProducts();
+
+        if (mounted) {
+          setProducts(apiProducts);
+        }
+      } catch (error) {
+        console.error("Products load error:", error);
+        if (mounted) {
+          setProducts([]);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedCategory]);
 
   const filtered = useMemo(() => {
-    let products: Product[] = selectedCategory
-      ? CATEGORIES.find((c) => c.id === selectedCategory)?.products ?? []
-      : allProducts;
+    if (!search.trim()) return products;
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      products = products.filter(
-        (p) =>
-          p.nameAr.toLowerCase().includes(q) ||
-          p.nameEn.toLowerCase().includes(q) ||
-          p.nameTr.toLowerCase().includes(q),
-      );
-    }
-    return products;
-  }, [selectedCategory, search, allProducts]);
+    const q = search.trim().toLowerCase();
+
+    return products.filter((product) => {
+      const name = getText(product.name, language).toLowerCase();
+      const desc = getText(product.description, language).toLowerCase();
+      const sku = String(product.sku || "").toLowerCase();
+
+      return name.includes(q) || desc.includes(q) || sku.includes(q);
+    });
+  }, [products, search, language]);
 
   const topPad = Platform.OS === "web" ? 16 : insets.top;
 
   return (
-    <View style={[styles.container, { paddingTop: topPad }]}>
-      {/* Search */}
-      <View style={styles.searchWrap}>
-        <Feather name="search" size={18} color={colors.light.mutedForeground} style={styles.searchIcon} />
+    <View style={styles.container}>
+      <View style={[styles.searchWrap, { marginTop: topPad + 16 }]}>
+        <Feather
+          name="search"
+          size={18}
+          color={colors.light.mutedForeground}
+          style={styles.searchIcon}
+        />
+
         <TextInput
-          style={[styles.searchInput, { textAlign: isRTL ? "right" : "left" }]}
-          placeholder={t("searchProducts")}
-          placeholderTextColor={colors.light.mutedForeground}
           value={search}
           onChangeText={setSearch}
+          placeholder={t("searchProducts")}
+          placeholderTextColor={colors.light.mutedForeground}
+          style={styles.searchInput}
         />
+
         {search.length > 0 && (
           <TouchableOpacity onPress={() => setSearch("")}>
             <Feather name="x" size={18} color={colors.light.mutedForeground} />
@@ -72,7 +137,6 @@ export default function ProductsScreen() {
         )}
       </View>
 
-      {/* Categories filter */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -80,68 +144,90 @@ export default function ProductsScreen() {
         contentContainerStyle={styles.filterContent}
       >
         <TouchableOpacity
-          style={[styles.filterChip, !selectedCategory && styles.filterChipActive]}
+          style={[
+            styles.filterChip,
+            !selectedCategory && styles.filterChipActive,
+          ]}
           onPress={() => {
             Haptics.selectionAsync();
             setSelectedCategory(null);
           }}
           activeOpacity={0.7}
         >
-          <Text style={[styles.filterChipText, !selectedCategory && styles.filterChipTextActive]}>
+          <Text
+            style={[
+              styles.filterChipText,
+              !selectedCategory && styles.filterChipTextActive,
+            ]}
+          >
             {t("allCategories")}
           </Text>
         </TouchableOpacity>
-        {CATEGORIES.map((cat) => (
-          <TouchableOpacity
-            key={cat.id}
-            style={[
-              styles.filterChip,
-              selectedCategory === cat.id && styles.filterChipActive,
-              selectedCategory === cat.id && { backgroundColor: cat.color },
-            ]}
-            onPress={() => {
-              Haptics.selectionAsync();
-              setSelectedCategory(selectedCategory === cat.id ? null : cat.id);
-            }}
-            activeOpacity={0.7}
-          >
-            <Text
-              style={[
-                styles.filterChipText,
-                selectedCategory === cat.id && styles.filterChipTextActive,
-              ]}
+
+        {categories.map((cat) => {
+          const active = selectedCategory === cat.id;
+
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              style={[styles.filterChip, active && styles.filterChipActive]}
+              onPress={() => {
+                Haptics.selectionAsync();
+                setSelectedCategory(active ? null : cat.id);
+              }}
+              activeOpacity={0.7}
             >
-              {getCategoryName(cat, language)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.filterChipText,
+                  active && styles.filterChipTextActive,
+                ]}
+              >
+                {getText(cat.name, language)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
 
-      {/* Products list */}
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={() => {
-              Haptics.selectionAsync();
-              router.push({ pathname: "/product/[id]", params: { id: item.id } });
-            }}
-          />
-        )}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: Math.max(insets.bottom, 34) + 80 },
-        ]}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Feather name="package" size={48} color={colors.light.border} />
-            <Text style={styles.emptyText}>No products found</Text>
-          </View>
-        }
-      />
+      {loading ? (
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="large" color={colors.light.primary} />
+          <Text style={styles.loadingText}>Loading products...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ProductCard
+              product={item}
+              onPress={() => {
+                Haptics.selectionAsync();
+                router.push({
+                  pathname: "/product/[id]",
+                  params: { id: item.id },
+                });
+              }}
+            />
+          )}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: Math.max(insets.bottom, 34) + 80 },
+          ]}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Feather
+                name="package"
+                size={42}
+                color={colors.light.mutedForeground}
+              />
+              <Text style={styles.emptyText}>No products found</Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 }
@@ -219,6 +305,17 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 15,
+    fontFamily: "Inter_400Regular",
+    color: colors.light.mutedForeground,
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: colors.light.mutedForeground,
   },

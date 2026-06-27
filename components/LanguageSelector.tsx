@@ -16,7 +16,6 @@ import { Language } from "@/constants/translations";
 
 const LANGUAGES: { code: Language; label: string; native: string }[] = [
   { code: "ar", label: "Arabic", native: "العربية" },
-  { code: "en", label: "English", native: "English" },
   { code: "tr", label: "Turkish", native: "Türkçe" },
 ];
 

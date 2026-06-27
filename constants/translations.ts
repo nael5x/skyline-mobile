@@ -1,4 +1,4 @@
-export type Language = "ar" | "en" | "tr";
+export type Language = "ar" | "tr";
 
 export type TranslationKey =
   | "home" | "products" | "about" | "contact" | "services" | "cart" | "settings"
@@ -28,7 +28,15 @@ export type TranslationKey =
   | "privacyPolicy" | "termsOfService" | "appVersion" | "language" | "legalInfo"
   | "onboardingTitle1" | "onboardingDesc1" | "onboardingTitle2" | "onboardingDesc2"
   | "onboardingTitle3" | "onboardingDesc3" | "getStarted" | "next" | "skip"
-  | "shareProduct" | "copyLink" | "moreProducts" | "searchAll";
+  | "shareProduct" | "copyLink" | "moreProducts" | "searchAll"
+  | "login" | "loginSubtitle" | "password" | "forgotPassword" | "noAccount"
+  | "createAccount" | "registerSubtitle" | "fullName" | "confirmPassword"
+  | "passwordMismatch" | "passwordTooShort" | "haveAccount"
+  | "emailSent" | "checkEmail" | "forgotSubtitle" | "sendResetLink" | "backToLogin" | "enterEmail"
+  | "logout" | "logoutConfirm" | "loginToAccount" | "addresses" | "notifications"
+  | "orderTracking" | "orderStatus" | "pending" | "confirmed" | "printing" | "ready" | "delivered" | "cancelled"
+  | "subtotal" | "vat" | "deliveryFee" | "couponCode" | "applyCoupon" | "paymentMethod" | "cashOnDelivery" | "bankTransfer"
+  | "deliveryAddress" | "street" | "city" | "country";
 
 type Translations = Record<Language, Record<TranslationKey, string>>;
 
@@ -93,67 +101,28 @@ export const translations: Translations = {
     getStarted: "ابدأ الآن", next: "التالي", skip: "تخطي",
     shareProduct: "مشاركة المنتج", copyLink: "نسخ الرابط", moreProducts: "منتجات أخرى",
     searchAll: "البحث في كل المنتجات",
-  },
-  en: {
-    home: "Home", products: "Products", about: "About", contact: "Contact",
-    services: "Services", cart: "Cart", settings: "Settings",
-    welcomeTitle: "Skyline Group", welcomeSubtitle: "Professional Printing Solutions for Your Business",
-    featuredCategories: "Featured Categories", viewAll: "View All",
-    ourServices: "Our Services", whyChooseUs: "Why Choose Us?",
-    contactUs: "Contact Us", callUs: "Call Us", whatsapp: "WhatsApp", sendMessage: "Send Message",
-    name: "Name", email: "Email", message: "Message", send: "Send",
-    address: "Address", addressValue: "Değirmiçem, 36014. Sk., 27090 Şehitkamil/Gaziantep", phone: "Phone",
-    aboutTitle: "About Us",
-    aboutDesc: "Skyline Group is a leading professional printing company based in Gaziantep, Turkey, providing comprehensive printing and marketing solutions for clients across the region and beyond.",
-    ourMission: "Our Mission",
-    missionDesc: "To provide high-quality printing services at competitive prices while ensuring complete customer satisfaction and on-time delivery.",
-    ourVision: "Our Vision",
-    visionDesc: "To be the most trusted printing partner in the region, continuously expanding our creative and innovative solutions.",
-    yearsExp: "Years Experience", clients: "Happy Clients", projects: "Completed Projects", quality: "Quality Guarantee",
-    selectLanguage: "Select Language", allCategories: "All Categories", searchProducts: "Search products...",
-    productDetails: "Product Details", backToProducts: "Back to Products", relatedProducts: "Related Products",
-    getQuote: "Get a Quote",
-    digitalPrinting: "Digital Printing", digitalPrintingDesc: "High-resolution digital printing with vivid, sharp colors",
-    offsetPrinting: "Offset Printing", offsetPrintingDesc: "Professional offset printing for large quantities",
-    largeFormat: "Large Format Printing", largeFormatDesc: "Banners, signs, and posters in oversized formats",
-    designService: "Design Service", designServiceDesc: "Creative design team to highlight your brand identity",
-    packaging: "Packaging Solutions", packagingDesc: "Professional packaging that reflects the quality of your products",
-    expressDelivery: "Express Delivery", expressDeliveryDesc: "Fast and safe delivery for all orders",
-    boxCalculatorTitle: "Smart Box Calculator", boxCalculatorSub: "Calculate packaging cost accurately",
-    bookPrintingTitle: "Book & Magazine Printing", bookPrintingSub: "Calculate your book printing cost",
-    marketplaceTitle: "Supplies & Machines", marketplaceSub: "Machines & raw materials at best prices",
-    namePlaceholder: "Enter your name", emailPlaceholder: "Enter your email",
-    messagePlaceholder: "Write your message here...", messageSent: "Your message has been sent successfully!",
-    fillAllFields: "Please fill in all fields", followUs: "Follow Us",
-    workHours: "Working Hours", workHoursValue: "Mon - Sat: 9:00 AM - 7:00 PM",
-    categories: "Categories",
-    addToCart: "Add to Cart", cartEmpty: "Your cart is empty",
-    cartEmptyDesc: "You haven't added any products yet. Browse our products and add what you need.",
-    cartTitle: "Shopping Cart", removeItem: "Remove", clearCart: "Clear Cart",
-    clearCartConfirm: "Are you sure you want to clear the cart?", cancel: "Cancel", yes: "Yes",
-    checkout: "Proceed to Order", orderSummary: "Order Summary", orderDetails: "Order Details",
-    customerName: "Full Name", customerPhone: "Phone Number", customerCity: "City / Area",
-    notes: "Notes", customerNamePlaceholder: "Enter your full name",
-    customerPhonePlaceholder: "e.g. +963 911 234 567", customerCityPlaceholder: "e.g. Damascus - Mezze",
-    notesPlaceholder: "Any additional order details...",
-    placeOrder: "Send Order via WhatsApp", orderSent: "Order Sent!",
-    orderSentDesc: "Our team will contact you shortly to confirm your order.",
-    quantity: "Quantity", items: "items", continueShop: "Continue Shopping",
-    total: "Total", itemAdded: "Added to cart", back: "Back",
-    orderHistory: "Order History", noOrders: "No previous orders",
-    noOrdersDesc: "Your orders will appear here after completing your first order.",
-    orderDate: "Date", orderItems: "Products", reorder: "Reorder",
-    privacyPolicy: "Privacy Policy", termsOfService: "Terms of Service",
-    appVersion: "App Version", language: "Language", legalInfo: "Legal Information",
-    onboardingTitle1: "Welcome to Skyline Group",
-    onboardingDesc1: "Your trusted professional printing partner for over 10 years",
-    onboardingTitle2: "Browse Hundreds of Products",
-    onboardingDesc2: "Business cards, brochures, banners, stickers, promotional gifts and more",
-    onboardingTitle3: "Order Easily via WhatsApp",
-    onboardingDesc3: "Add products to cart and send your order directly - we'll contact you in minutes",
-    getStarted: "Get Started", next: "Next", skip: "Skip",
-    shareProduct: "Share Product", copyLink: "Copy Link", moreProducts: "More Products",
-    searchAll: "Search all products",
+    login: "تسجيل الدخول", loginSubtitle: "سجّل دخولك لمتابعة طلباتك",
+    password: "كلمة المرور", forgotPassword: "نسيت كلمة المرور؟",
+    noAccount: "ليس لديك حساب؟", createAccount: "إنشاء حساب",
+    registerSubtitle: "أنشئ حسابك للبدء بالطلب", fullName: "الاسم الكامل",
+    confirmPassword: "تأكيد كلمة المرور", passwordMismatch: "كلمات المرور غير متطابقة",
+    passwordTooShort: "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    haveAccount: "لديك حساب بالفعل؟",
+    emailSent: "تم الإرسال", checkEmail: "تحقق من بريدك الإلكتروني لإعادة تعيين كلمة المرور",
+    forgotSubtitle: "أدخل بريدك وسنرسل لك رابط لإعادة تعيين كلمة المرور",
+    sendResetLink: "إرسال رابط إعادة التعيين", backToLogin: "العودة لتسجيل الدخول",
+    enterEmail: "الرجاء إدخال البريد الإلكتروني",
+    logout: "تسجيل الخروج", logoutConfirm: "هل تريد تسجيل الخروج؟",
+    loginToAccount: "سجّل دخولك لتتمكن من متابعة طلباتك",
+    addresses: "العناوين", notifications: "الإشعارات",
+    orderTracking: "تتبع الطلب", orderStatus: "حالة الطلب",
+    pending: "قيد الانتظار", confirmed: "مؤكد", printing: "جارِ الطباعة",
+    ready: "جاهز", delivered: "تم التسليم", cancelled: "ملغي",
+    subtotal: "المجموع الفرعي", vat: "ضريبة القيمة المضافة",
+    deliveryFee: "رسوم التوصيل", couponCode: "كود الخصم",
+    applyCoupon: "تطبيق", paymentMethod: "طريقة الدفع",
+    cashOnDelivery: "الدفع عند الاستلام", bankTransfer: "تحويل بنكي",
+    deliveryAddress: "عنوان التوصيل", street: "الشارع", city: "المدينة", country: "البلد",
   },
   tr: {
     home: "Ana Sayfa", products: "Ürünler", about: "Hakkımızda", contact: "İletişim",
@@ -215,5 +184,27 @@ export const translations: Translations = {
     getStarted: "Başla", next: "İleri", skip: "Atla",
     shareProduct: "Ürünü Paylaş", copyLink: "Bağlantıyı Kopyala", moreProducts: "Daha Fazla Ürün",
     searchAll: "Tüm ürünlerde ara",
+    login: "Giriş Yap", loginSubtitle: "Siparişlerinizi takip etmek için giriş yapın",
+    password: "Şifre", forgotPassword: "Şifremi Unuttum?",
+    noAccount: "Hesabınız yok mu?", createAccount: "Hesap Oluştur",
+    registerSubtitle: "Sipariş vermeye başlamak için hesap oluşturun", fullName: "Ad Soyad",
+    confirmPassword: "Şifre Tekrar", passwordMismatch: "Şifreler uyuşmuyor",
+    passwordTooShort: "Şifre en az 6 karakter olmalıdır",
+    haveAccount: "Zaten hesabınız var mı?",
+    emailSent: "E-posta Gönderildi", checkEmail: "Şifrenizi sıfırlamak için e-postanızı kontrol edin",
+    forgotSubtitle: "E-postanızı girin, size sıfırlama bağlantısı göndereceğiz",
+    sendResetLink: "Sıfırlama Bağlantısı Gönder", backToLogin: "Girişe Dön",
+    enterEmail: "Lütfen e-postanızı girin",
+    logout: "Çıkış Yap", logoutConfirm: "Çıkış yapmak istediğinizden emin misiniz?",
+    loginToAccount: "Siparişlerinizi takip etmek ve hesabınızı yönetmek için giriş yapın",
+    addresses: "Adresler", notifications: "Bildirimler",
+    orderTracking: "Sipariş Takibi", orderStatus: "Sipariş Durumu",
+    pending: "Beklemede", confirmed: "Onaylandı", printing: "Baskıda",
+    ready: "Hazır", delivered: "Teslim Edildi", cancelled: "İptal Edildi",
+    subtotal: "Ara Toplam", vat: "KDV",
+    deliveryFee: "Teslimat Ücreti", couponCode: "Kupon Kodu",
+    applyCoupon: "Uygula", paymentMethod: "Ödeme Yöntemi",
+    cashOnDelivery: "Kapıda Ödeme", bankTransfer: "Banka Transferi",
+    deliveryAddress: "Teslimat Adresi", street: "Sokak", city: "Şehir", country: "Ülke",
   },
 };

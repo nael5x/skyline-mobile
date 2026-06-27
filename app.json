@@ -20,7 +20,11 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Used for scanning QR codes",
         "NSPhotoLibraryUsageDescription": "Used to share product images",
-        "CFBundleLocalizations": ["ar", "en", "tr"],
+        "CFBundleLocalizations": [
+          "ar",
+          "en",
+          "tr"
+        ],
         "CFBundleDevelopmentRegion": "ar"
       }
     },
@@ -28,6 +32,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#1B3A6B"
+        
       },
       "package": "com.skylinegroup.mobile",
       "versionCode": 1,
@@ -41,12 +46,7 @@
       "bundler": "metro"
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://replit.com/"
-        }
-      ],
+      "expo-router",
       "expo-font",
       "expo-web-browser"
     ],
@@ -55,8 +55,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "skyline-group-mobile"
+        "projectId": "24df6028-92ea-4eac-93f0-b40b617db856"
       }
-    }
+    },
+    "owner": "nael5x"
   }
 }

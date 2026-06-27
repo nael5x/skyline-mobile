@@ -18,10 +18,29 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { firebaseInitError, firebaseConfigSummary } from "@/config/firebase";
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
+
+const ErrorUtils: any = (global as any).ErrorUtils;
+if (ErrorUtils && typeof ErrorUtils.setGlobalHandler === "function") {
+  const previousHandler = ErrorUtils.getGlobalHandler?.();
+  ErrorUtils.setGlobalHandler((error: Error, isFatal?: boolean) => {
+    console.error("Global error caught:", error, "isFatal:", isFatal);
+    if (previousHandler) previousHandler(error, isFatal);
+  });
+}
+
+function FirebaseGuard({ children }: { children: React.ReactNode }) {
+  if (firebaseInitError) {
+    throw new Error(
+      `Firebase init failed: ${firebaseInitError.message}\n\nConfig: ${firebaseConfigSummary}`
+    );
+  }
+  return <>{children}</>;
+}
 
 function RootLayoutNav({ onboardingDone }: { onboardingDone: boolean }) {
   return (
@@ -76,19 +95,21 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <LanguageProvider>
-          <AuthProvider>
-          <CartProvider>
-            <QueryClientProvider client={queryClient}>
-              <GestureHandlerRootView>
-                <KeyboardProvider>
-                  <RootLayoutNav onboardingDone={onboardingDone} />
-                </KeyboardProvider>
-              </GestureHandlerRootView>
-            </QueryClientProvider>
-          </CartProvider>
-          </AuthProvider>
-        </LanguageProvider>
+        <FirebaseGuard>
+          <LanguageProvider>
+            <AuthProvider>
+              <CartProvider>
+                <QueryClientProvider client={queryClient}>
+                  <GestureHandlerRootView>
+                    <KeyboardProvider>
+                      <RootLayoutNav onboardingDone={onboardingDone} />
+                    </KeyboardProvider>
+                  </GestureHandlerRootView>
+                </QueryClientProvider>
+              </CartProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </FirebaseGuard>
       </ErrorBoundary>
     </SafeAreaProvider>
   );
