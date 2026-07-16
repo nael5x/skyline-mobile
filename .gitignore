@@ -44,6 +44,23 @@ yarn-error.*
 google-services.json
 GoogleService-Info.plist
 
-# Expo Application Services secrets
-eas.json
 
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+
+# Server/database secrets
+db_connection.php
+includes/db_connection.php
+server-api-reference/db_connection.php
+
+# Android / Google credentials
+*.jks
+*.keystore
+google-services.json
+credentials.json
+service-account*.json
+
+# Local Expo files
+.expo/
